@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import DaySelector, { buildDayRange } from "@/components/DaySelector";
 import SlotPicker from "@/components/SlotPicker";
+import BookingForm from "@/components/BookingForm";
+import BookingConfirmation from "@/components/BookingConfirmation";
 import SlotGridSkeleton from "@/components/skeletons/SlotGridSkeleton";
 import { useAvailabilityQuery } from "@/lib/bookings";
 import { useResourceQuery } from "@/lib/resources";
-import { formatSlotTime, formatDayLabel } from "@/lib/time";
-import type { AvailableSlot } from "@/types/db";
+import type { AvailableSlot, BookingResult } from "@/types/db";
 
 // Single-resource site for now — a [slug] route is a later concern, not
 // something the current scope needs.
@@ -27,6 +28,7 @@ export default function BookingPage() {
   const days = useMemo(() => buildDayRange(today, VISIBLE_DAYS), [today]);
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
+  const [confirmed, setConfirmed] = useState<BookingResult | null>(null);
 
   const { data: slots, isPending: slotsPending, isError: slotsError } = useAvailabilityQuery(
     RESOURCE_SLUG,
@@ -50,6 +52,21 @@ export default function BookingPage() {
         <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-5 text-sm text-red-700 dark:text-red-400">
           Couldn&apos;t load this resource. Try refreshing.
         </div>
+      </div>
+    );
+  }
+
+  if (confirmed) {
+    return (
+      <div className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <BookingConfirmation
+          resource={resource}
+          booking={confirmed}
+          onBookAnother={() => {
+            setConfirmed(null);
+            setSelectedSlot(null);
+          }}
+        />
       </div>
     );
   }
@@ -93,16 +110,15 @@ export default function BookingPage() {
         )}
       </section>
 
-      {/* Booking form comes in step 4 — this just proves slot selection works. */}
       {selectedSlot && (
-        <section className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 text-sm">
-          <p className="text-neutral-500 dark:text-neutral-400">Selected</p>
-          <p className="font-medium mt-1">
-            {formatDayLabel(selectedDay, resource.timezone)} ·{" "}
-            {formatSlotTime(selectedSlot.starts_at, resource.timezone)} –{" "}
-            {formatSlotTime(selectedSlot.ends_at, resource.timezone)}
-          </p>
-        </section>
+        <BookingForm
+          resource={resource}
+          slot={selectedSlot}
+          from={today}
+          days={VISIBLE_DAYS}
+          onCancelSelection={() => setSelectedSlot(null)}
+          onBooked={setConfirmed}
+        />
       )}
     </div>
   );

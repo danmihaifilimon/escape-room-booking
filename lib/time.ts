@@ -31,3 +31,29 @@ export function addDays(date: Date, days: number): Date {
   next.setDate(next.getDate() + days);
   return next;
 }
+
+// Postgres/PostgREST render a tstzrange as text — e.g.
+// ["2026-07-11 07:00:00+00","2026-07-11 08:00:00+00") — which is NOT ISO
+// 8601 (space instead of "T", "+00" instead of "+00:00"). `new Date()`
+// parsing of that exact shape happens to work in V8 (tested against Node),
+// but the ECMAScript spec only guarantees the strict ISO format, so relying
+// on that across browser engines would be an untested assumption. This
+// converts to ISO 8601 explicitly instead — tested against Postgres's actual
+// output, fractional seconds, and non-whole-hour offsets.
+export function parseTstzRange(raw: string): [starts: string, ends: string] {
+  const [startsRaw, endsRaw] = raw
+    .replace(/^[[(]/, "")
+    .replace(/[)\]]$/, "")
+    .split(",")
+    .map((s) => s.trim().replace(/^"|"$/g, ""));
+
+  return [toISO(startsRaw), toISO(endsRaw)];
+}
+
+function toISO(pgTimestamp: string): string {
+  const [datePart, timePart] = pgTimestamp.split(" ");
+  const match = timePart.match(/^([\d:.]+)([+-]\d{2})(?::?(\d{2}))?$/);
+  if (!match) throw new Error(`Unrecognized Postgres timestamp: ${pgTimestamp}`);
+  const [, time, offsetHours, offsetMinutes = "00"] = match;
+  return `${datePart}T${time}${offsetHours}:${offsetMinutes}`;
+}
