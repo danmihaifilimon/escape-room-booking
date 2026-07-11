@@ -44,11 +44,13 @@ export default function DaySelector({ days, selected, onSelect, timeZone }: DayS
         style={{
           // Fades the edge pills out instead of hard-cropping them, so a
           // partially-visible day at the boundary reads as "more to
-          // scroll" rather than a rendering glitch.
-          maskImage:
-            "linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)",
-          WebkitMaskImage:
-            "linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)",
+          // scroll" rather than a rendering glitch. Only fades a side that
+          // actually has more content past it — otherwise the fade cut
+          // into the first/last day's own pill color (e.g. the selected
+          // accent fill) whenever it sat flush against that edge, letting
+          // the page background bleed into its corner.
+          maskImage: `linear-gradient(to right, ${atStart ? "black" : "transparent"}, black 16px, black calc(100% - 16px), ${atEnd ? "black" : "transparent"})`,
+          WebkitMaskImage: `linear-gradient(to right, ${atStart ? "black" : "transparent"}, black 16px, black calc(100% - 16px), ${atEnd ? "black" : "transparent"})`,
         }}
       >
         {days.map((day) => {
