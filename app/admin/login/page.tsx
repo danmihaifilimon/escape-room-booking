@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { BASE_PATH } from "@/lib/basePath";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -27,7 +28,9 @@ export default function AdminLoginPage() {
     // A full navigation (not router.push) so middleware and the server
     // layout re-run against the now-authenticated cookie, instead of
     // client-side routing to a server-guarded page with stale auth state.
-    window.location.href = "/admin";
+    // basePath isn't applied to raw window.location.href, so it's prefixed
+    // by hand.
+    window.location.href = `${BASE_PATH}/admin`;
   }
 
   return (
