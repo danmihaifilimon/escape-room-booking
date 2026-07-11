@@ -40,8 +40,13 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isLoginPage = request.nextUrl.pathname === "/admin/login";
-  if (request.nextUrl.pathname.startsWith("/admin") && !isLoginPage && !user) {
+  // /admin/update-password can't require an existing session here: the
+  // recovery link's session lives in the URL hash, which the browser never
+  // sends to the server, so getUser() above is guaranteed to see no user on
+  // that first request. Auth for that page happens entirely client-side.
+  const publicAdminPaths = ["/admin/login", "/admin/forgot-password", "/admin/update-password"];
+  const isPublicAdminPath = publicAdminPaths.includes(request.nextUrl.pathname);
+  if (request.nextUrl.pathname.startsWith("/admin") && !isPublicAdminPath && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     return NextResponse.redirect(url);

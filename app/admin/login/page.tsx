@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
@@ -74,6 +75,13 @@ export default function AdminLoginPage() {
         >
           {loading ? "Signing in…" : "Sign in"}
         </button>
+
+        <Link
+          href="/admin/forgot-password"
+          className="block text-center text-xs text-neutral-500 dark:text-neutral-400 hover:underline"
+        >
+          Forgot password?
+        </Link>
       </form>
     </div>
   );
