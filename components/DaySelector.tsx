@@ -29,9 +29,10 @@ export default function DaySelector({ days, selected, onSelect, timeZone }: DayS
   function scrollPage(direction: -1 | 1) {
     const el = scrollerRef.current;
     if (!el) return;
-    // A near-full-width page per click, not the few pixels a native
-    // scrollbar arrow button nudges.
-    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: "smooth" });
+    // A few pills' worth per click — enough to feel like real progress
+    // without a near-full-width jump the native scrollbar arrows didn't do
+    // either, so it flew past too much of the strip at once.
+    el.scrollBy({ left: direction * el.clientWidth * 0.4, behavior: "smooth" });
   }
 
   return (

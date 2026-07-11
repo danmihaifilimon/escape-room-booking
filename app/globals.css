@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Switches Tailwind's dark: variant from the OS-level prefers-color-scheme
+   media query to this [data-theme] attribute, so the manual toggle (see
+   ThemeToggle.tsx) can override the system preference. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -17,18 +22,24 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --accent: #818cf8;
-    --accent-dark: #312e81;
-    --accent-soft: rgba(99, 102, 241, 0.15);
-  }
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --accent: #818cf8;
+  --accent-dark: #312e81;
+  --accent-soft: rgba(99, 102, 241, 0.15);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  /* Two soft indigo glows plus a faint dot grid — decorative, not a photo,
+     so it never looks mismatched and needs no image asset/licensing. Dots
+     mix with --foreground so they stay subtle in both themes automatically. */
+  background-image:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 42%),
+    radial-gradient(circle at 88% 92%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 45%),
+    radial-gradient(circle, color-mix(in srgb, var(--foreground) 6%, transparent) 1px, transparent 1px);
+  background-size: auto, auto, 22px 22px;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
