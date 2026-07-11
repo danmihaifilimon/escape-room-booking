@@ -160,7 +160,8 @@ export default function BookingForm({
         <button
           type="submit"
           disabled={mutation.isPending}
-          className="flex-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-4 py-2 text-sm font-medium disabled:opacity-50"
+          style={{ background: "var(--accent)" }}
+          className="flex-1 rounded-full text-white px-4 py-2 text-sm font-medium disabled:opacity-50 hover:brightness-110 transition"
         >
           {mutation.isPending ? "Booking…" : "Confirm booking"}
         </button>
@@ -181,7 +182,7 @@ function inputClass(hasError: boolean): string {
   return `w-full rounded-lg border bg-transparent px-3 py-2 text-sm outline-none transition-colors ${
     hasError
       ? "border-red-400 dark:border-red-700"
-      : "border-neutral-200 dark:border-neutral-800 focus:border-neutral-400 dark:focus:border-neutral-600"
+      : "border-neutral-200 dark:border-neutral-800 focus:border-[var(--accent)]"
   }`;
 }
 

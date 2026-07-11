@@ -22,9 +22,10 @@ export default function DaySelector({ days, selected, onSelect, timeZone }: DayS
             aria-pressed={isSelected}
             className={`shrink-0 rounded-xl border px-4 py-2 text-sm font-medium transition-colors ${
               isSelected
-                ? "bg-neutral-900 text-white border-transparent dark:bg-neutral-100 dark:text-neutral-900"
-                : "border-neutral-200 text-neutral-600 hover:border-neutral-400 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600"
+                ? "text-white border-transparent shadow-sm shadow-indigo-500/30"
+                : "border-neutral-200 text-neutral-600 hover:border-[var(--accent)] hover:text-[var(--accent)] dark:border-neutral-800 dark:text-neutral-400"
             }`}
+            style={isSelected ? { background: "var(--accent)" } : undefined}
           >
             {formatDayLabel(day, timeZone)}
           </button>

@@ -49,9 +49,10 @@ export default function SlotPicker({
               !slot.is_free
                 ? "border-transparent bg-neutral-100 text-neutral-300 line-through cursor-not-allowed dark:bg-neutral-900 dark:text-neutral-700"
                 : isSelected
-                  ? "border-transparent bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"
+                  ? "border-transparent text-white shadow-sm shadow-indigo-500/30"
                   : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-400 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400"
             }`}
+            style={slot.is_free && isSelected ? { background: "var(--accent)" } : undefined}
           >
             {formatSlotTime(slot.starts_at, timeZone)}
           </button>

@@ -73,11 +73,27 @@ export default function BookingPage() {
 
   return (
     <div className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
-      <header className="mb-8">
-        <h1 className="text-xl font-semibold tracking-tight">{resource.name}</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-          Pick a day, then an available time slot.
-        </p>
+      <header className="mb-8 rounded-2xl overflow-hidden shadow-lg shadow-indigo-500/10">
+        <div
+          className="px-6 py-8 sm:px-8 sm:py-10 text-white"
+          style={{
+            background: "linear-gradient(135deg, var(--accent), var(--accent-dark))",
+          }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-widest text-indigo-100">
+            🔐 Escape Room
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-1">
+            {resource.name}
+          </h1>
+          <p className="text-sm text-indigo-100/90 mt-2">
+            Pick a day, then an available time slot.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-5">
+            <Badge>⏱️ {resource.slot_minutes}-minute sessions</Badge>
+            <Badge>👥 Up to {resource.capacity} players</Badge>
+          </div>
+        </div>
       </header>
 
       <section className="mb-6">
@@ -121,5 +137,13 @@ export default function BookingPage() {
         />
       )}
     </div>
+  );
+}
+
+function Badge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white">
+      {children}
+    </span>
   );
 }

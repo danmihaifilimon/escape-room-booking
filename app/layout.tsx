@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escape Room — Booking",
+  title: "The Locked Room — Booking",
   description: "Book an available time slot online.",
 };
 

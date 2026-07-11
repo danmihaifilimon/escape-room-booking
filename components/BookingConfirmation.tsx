@@ -18,7 +18,10 @@ export default function BookingConfirmation({
 
   return (
     <section className="rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/30 p-5 text-sm">
-      <p className="font-medium text-emerald-800 dark:text-emerald-400 mb-3">
+      <p className="flex items-center gap-2 font-medium text-emerald-800 dark:text-emerald-400 mb-3">
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs">
+          ✓
+        </span>
         Booking confirmed
       </p>
       <dl className="space-y-1 text-neutral-700 dark:text-neutral-300">
@@ -42,7 +45,8 @@ export default function BookingConfirmation({
       <button
         type="button"
         onClick={onBookAnother}
-        className="mt-4 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-4 py-2 text-sm font-medium"
+        style={{ background: "var(--accent)" }}
+        className="mt-4 rounded-full text-white px-4 py-2 text-sm font-medium hover:brightness-110 transition"
       >
         Book another slot
       </button>

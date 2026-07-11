@@ -1,7 +1,7 @@
 -- Demo data. Safe to re-run: resources are keyed by slug.
 
 insert into resources (slug, name, timezone, slot_minutes, capacity, lead_minutes, horizon_days)
-values ('escape-cluj', 'Escape Room — Cluj', 'Europe/Bucharest', 60, 6, 60, 60)
+values ('escape-cluj', 'The Locked Room', 'Europe/Bucharest', 60, 6, 60, 60)
 on conflict (slug) do nothing;
 
 -- Tue–Sun 10:00–20:00, closed Mondays. (0 = Sunday, matching JS getDay().)
