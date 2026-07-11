@@ -1,18 +1,24 @@
+import type { Lang } from "@/lib/i18n";
+
 // Every formatting helper takes an explicit IANA timezone and renders in it —
 // never the browser's local zone. A client booking a Cluj escape room from
 // London must see Cluj time, or "11:00" and "9:00" both look correct and mean
 // different things.
 
-export function formatSlotTime(iso: string, timeZone: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
+function locale(lang: Lang): string {
+  return lang === "ro" ? "ro-RO" : "en-GB";
+}
+
+export function formatSlotTime(iso: string, timeZone: string, lang: Lang = "en"): string {
+  return new Intl.DateTimeFormat(locale(lang), {
     timeZone,
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(iso));
 }
 
-export function formatDayLabel(date: Date, timeZone: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
+export function formatDayLabel(date: Date, timeZone: string, lang: Lang = "en"): string {
+  return new Intl.DateTimeFormat(locale(lang), {
     timeZone,
     weekday: "short",
     day: "numeric",

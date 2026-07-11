@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { addDays, formatDayLabel } from "@/lib/time";
+import { useLang } from "@/components/LangProvider";
 
 interface DaySelectorProps {
   days: Date[];
@@ -11,6 +12,7 @@ interface DaySelectorProps {
 }
 
 export default function DaySelector({ days, selected, onSelect, timeZone }: DaySelectorProps) {
+  const { lang, t } = useLang();
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -68,7 +70,7 @@ export default function DaySelector({ days, selected, onSelect, timeZone }: DayS
               }`}
               style={isSelected ? { background: "var(--accent)" } : undefined}
             >
-              {formatDayLabel(day, timeZone)}
+              {formatDayLabel(day, timeZone, lang)}
             </button>
           );
         })}
@@ -77,7 +79,7 @@ export default function DaySelector({ days, selected, onSelect, timeZone }: DayS
       {!atStart && (
         <button
           type="button"
-          aria-label="Earlier days"
+          aria-label={t.earlierDays}
           onClick={() => scrollPage(-1)}
           className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-md flex items-center justify-center text-sm hover:border-[var(--accent)] hover:text-[var(--accent)]"
         >
@@ -87,7 +89,7 @@ export default function DaySelector({ days, selected, onSelect, timeZone }: DayS
       {!atEnd && (
         <button
           type="button"
-          aria-label="Later days"
+          aria-label={t.laterDays}
           onClick={() => scrollPage(1)}
           className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-8 h-8 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-md flex items-center justify-center text-sm hover:border-[var(--accent)] hover:text-[var(--accent)]"
         >

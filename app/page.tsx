@@ -6,6 +6,8 @@ import SlotPicker from "@/components/SlotPicker";
 import BookingForm from "@/components/BookingForm";
 import BookingConfirmation from "@/components/BookingConfirmation";
 import SlotGridSkeleton from "@/components/skeletons/SlotGridSkeleton";
+import LangProvider, { useLang } from "@/components/LangProvider";
+import LangToggle from "@/components/LangToggle";
 import { useAvailabilityQuery } from "@/lib/bookings";
 import { useResourceQuery } from "@/lib/resources";
 import type { AvailableSlot, BookingResult } from "@/types/db";
@@ -15,7 +17,19 @@ import type { AvailableSlot, BookingResult } from "@/types/db";
 const RESOURCE_SLUG = "escape-cluj";
 const VISIBLE_DAYS = 14; // just for this preview strip — the real cutoff is resource.horizon_days
 
+// Scoped to just this page (not the root layout) — the admin panel is
+// Dan-only, so it stays English rather than doubling translation work for a
+// page nobody else ever sees.
 export default function BookingPage() {
+  return (
+    <LangProvider>
+      <BookingPageContent />
+    </LangProvider>
+  );
+}
+
+function BookingPageContent() {
+  const { t } = useLang();
   const { data: resource, isPending: resourcePending, isError: resourceError } =
     useResourceQuery(RESOURCE_SLUG);
 
@@ -50,7 +64,7 @@ export default function BookingPage() {
     return (
       <div className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-5 text-sm text-red-700 dark:text-red-400">
-          Couldn&apos;t load this resource. Try refreshing.
+          {t.resourceError}
         </div>
       </div>
     );
@@ -80,18 +94,19 @@ export default function BookingPage() {
             background: "linear-gradient(135deg, var(--accent), var(--accent-dark))",
           }}
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-indigo-100">
-            🔐 Escape Room
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-100">
+              {t.kicker}
+            </p>
+            <LangToggle />
+          </div>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-1">
             {resource.name}
           </h1>
-          <p className="text-sm text-indigo-100/90 mt-2">
-            Pick a day, then an available time slot.
-          </p>
+          <p className="text-sm text-indigo-100/90 mt-2">{t.pickDay}</p>
           <div className="flex flex-wrap gap-2 mt-5">
-            <Badge>⏱️ {resource.slot_minutes}-minute sessions</Badge>
-            <Badge>👥 Up to {resource.capacity} players</Badge>
+            <Badge>⏱️ {t.sessionLength(resource.slot_minutes)}</Badge>
+            <Badge>👥 {t.capacity(resource.capacity)}</Badge>
           </div>
         </div>
       </header>
@@ -112,7 +127,7 @@ export default function BookingPage() {
         {slotsPending && <SlotGridSkeleton />}
         {slotsError && (
           <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-5 text-sm text-red-700 dark:text-red-400">
-            Couldn&apos;t load availability. Try refreshing.
+            {t.availabilityError}
           </div>
         )}
         {slots && (

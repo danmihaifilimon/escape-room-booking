@@ -1,6 +1,7 @@
 "use client";
 
 import { dateKey, formatSlotTime } from "@/lib/time";
+import { useLang } from "@/components/LangProvider";
 import type { AvailableSlot } from "@/types/db";
 
 interface SlotPickerProps {
@@ -18,13 +19,14 @@ export default function SlotPicker({
   onSelect,
   timeZone,
 }: SlotPickerProps) {
+  const { lang, t } = useLang();
   const dayKey = dateKey(selectedDay, timeZone);
   const daySlots = slots.filter((s) => dateKey(new Date(s.starts_at), timeZone) === dayKey);
 
   if (daySlots.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 p-5 text-sm text-neutral-500 dark:text-neutral-400">
-        No slots available this day.
+        {t.noSlotsThisDay}
       </div>
     );
   }
@@ -33,6 +35,7 @@ export default function SlotPicker({
     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
       {daySlots.map((slot) => {
         const isSelected = selectedSlot?.starts_at === slot.starts_at;
+        const time = formatSlotTime(slot.starts_at, timeZone, lang);
         return (
           <button
             key={slot.starts_at}
@@ -40,11 +43,7 @@ export default function SlotPicker({
             disabled={!slot.is_free}
             onClick={() => onSelect(slot)}
             aria-pressed={isSelected}
-            aria-label={
-              slot.is_free
-                ? `${formatSlotTime(slot.starts_at, timeZone)}, available`
-                : `${formatSlotTime(slot.starts_at, timeZone)}, already booked`
-            }
+            aria-label={slot.is_free ? t.slotAvailable(time) : t.slotBooked(time)}
             className={`h-11 rounded-lg text-sm font-medium transition-colors border ${
               !slot.is_free
                 ? "border-transparent bg-neutral-100 text-neutral-300 line-through cursor-not-allowed dark:bg-neutral-900 dark:text-neutral-700"
@@ -54,7 +53,7 @@ export default function SlotPicker({
             }`}
             style={slot.is_free && isSelected ? { background: "var(--accent)" } : undefined}
           >
-            {formatSlotTime(slot.starts_at, timeZone)}
+            {time}
           </button>
         );
       })}

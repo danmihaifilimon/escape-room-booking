@@ -9,6 +9,7 @@ import {
 import { bookingFormSchema, type BookingFormValues } from "@/lib/validation";
 import { PG_ERROR } from "@/types/db";
 import { formatDayLabel, formatSlotTime } from "@/lib/time";
+import { useLang } from "@/components/LangProvider";
 import type { AvailableSlot, BookingResult, Resource } from "@/types/db";
 
 interface BookingFormProps {
@@ -30,6 +31,7 @@ export default function BookingForm({
   onCancelSelection,
   onBooked,
 }: BookingFormProps) {
+  const { lang, t } = useLang();
   const [values, setValues] = useState<BookingFormValues>(EMPTY_VALUES);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof BookingFormValues, string>>>(
     {}
@@ -46,7 +48,7 @@ export default function BookingForm({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const schema = bookingFormSchema(resource.capacity);
+    const schema = bookingFormSchema(resource.capacity, lang);
     const result = schema.safeParse(values);
 
     if (!result.success) {
@@ -88,20 +90,20 @@ export default function BookingForm({
       className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 space-y-4"
     >
       <div>
-        <p className="text-neutral-500 dark:text-neutral-400 text-xs">Booking</p>
+        <p className="text-neutral-500 dark:text-neutral-400 text-xs">{t.bookingLabel}</p>
         <p className="font-medium text-sm mt-0.5">
           {/* Derived from slot.starts_at, NOT the `from` prop — `from` is the
               availability window's start (today), needed only to key the
               mutation's cache invalidation to match useAvailabilityQuery.
               Using it here showed "today" as the date on every booking
               regardless of which day was actually picked. */}
-          {formatDayLabel(new Date(slot.starts_at), resource.timezone)} ·{" "}
-          {formatSlotTime(slot.starts_at, resource.timezone)}–
-          {formatSlotTime(slot.ends_at, resource.timezone)}
+          {formatDayLabel(new Date(slot.starts_at), resource.timezone, lang)} ·{" "}
+          {formatSlotTime(slot.starts_at, resource.timezone, lang)}–
+          {formatSlotTime(slot.ends_at, resource.timezone, lang)}
         </p>
       </div>
 
-      <Field label="Name" error={fieldErrors.name}>
+      <Field label={t.nameLabel} error={fieldErrors.name}>
         <input
           type="text"
           value={values.name}
@@ -111,7 +113,7 @@ export default function BookingForm({
         />
       </Field>
 
-      <Field label="Email" error={fieldErrors.email}>
+      <Field label={t.emailLabel} error={fieldErrors.email}>
         <input
           type="email"
           value={values.email}
@@ -121,7 +123,7 @@ export default function BookingForm({
         />
       </Field>
 
-      <Field label={`People (max ${resource.capacity})`} error={fieldErrors.partySize}>
+      <Field label={t.peopleLabel(resource.capacity)} error={fieldErrors.partySize}>
         <input
           type="number"
           min={1}
@@ -132,7 +134,7 @@ export default function BookingForm({
         />
       </Field>
 
-      <Field label="Notes (optional)" error={fieldErrors.notes}>
+      <Field label={t.notesLabel} error={fieldErrors.notes}>
         <textarea
           value={values.notes}
           onChange={(e) => handleChange("notes", e.target.value)}
@@ -143,14 +145,14 @@ export default function BookingForm({
 
       {mutation.isError && (
         <div className="rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-400">
-          {describeBookingError(mutation.error)}
+          {describeBookingError(mutation.error, lang)}
           {wasOutbid && (
             <button
               type="button"
               onClick={onCancelSelection}
               className="block mt-2 font-medium underline underline-offset-2"
             >
-              Choose a different time
+              {t.chooseAnotherTime}
             </button>
           )}
         </div>
@@ -163,7 +165,7 @@ export default function BookingForm({
           style={{ background: "var(--accent)" }}
           className="flex-1 rounded-full text-white px-4 py-2 text-sm font-medium disabled:opacity-50 hover:brightness-110 transition"
         >
-          {mutation.isPending ? "Booking…" : "Confirm booking"}
+          {mutation.isPending ? t.bookingPending : t.confirmBooking}
         </button>
         <button
           type="button"
@@ -171,7 +173,7 @@ export default function BookingForm({
           disabled={mutation.isPending}
           className="rounded-full border border-neutral-200 dark:border-neutral-800 px-4 py-2 text-sm font-medium disabled:opacity-50"
         >
-          Cancel
+          {t.cancel}
         </button>
       </div>
     </form>

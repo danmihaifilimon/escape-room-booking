@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { PG_ERROR } from "@/types/db";
+import { STRINGS, type Lang } from "@/lib/i18n";
 import type { AvailableSlot, BookingResult } from "@/types/db";
 
 function toISODate(d: Date): string {
@@ -122,20 +123,21 @@ export function useCreateBookingMutation(slug: string, from: Date, days: number)
 // case (23P01) is the one worth being specific about: it means the database
 // itself serialised two concurrent attempts and this one lost, which is
 // expected behaviour under load, not a malfunction.
-export function describeBookingError(err: unknown): string {
+export function describeBookingError(err: unknown, lang: Lang = "en"): string {
+  const e = STRINGS[lang].bookingErrors;
   if (err instanceof BookingError) {
     switch (err.code) {
       case PG_ERROR.EXCLUSION_VIOLATION:
-        return "That slot was just booked by someone else. Pick another time.";
+        return e.exclusionViolation;
       case PG_ERROR.SLOT_NOT_BOOKABLE:
-        return "That slot is no longer bookable — it may be in the past, too soon, or outside opening hours.";
+        return e.slotNotBookable;
       case PG_ERROR.INVALID_INPUT:
-        return "Please check the number of people.";
+        return e.invalidInput;
       case PG_ERROR.UNKNOWN_RESOURCE:
-        return "This resource isn't available right now.";
+        return e.unknownResource;
       default:
-        return err.message || "Something went wrong. Please try again.";
+        return err.message || e.generic;
     }
   }
-  return "Something went wrong. Please try again.";
+  return e.generic;
 }
